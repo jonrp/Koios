@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28010.2036
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koios.Tests", "Koios.Tests\Koios.Tests.csproj", "{8DAB424E-F1DC-4954-B252-65D97589D0F6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Koios.Core", "Koios.Core\Koios.Core.csproj", "{9DE8CAB3-A532-4E14-8C3A-C85E71FEBFB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Koios.WinForms", "Koios.WinForms\Koios.WinForms.csproj", "{D3602F8E-EABA-4C2A-A57F-CB0869DC9558}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CC165870-C303-4913-858C-547D3E8E13C6}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		PLAN = PLAN
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8DAB424E-F1DC-4954-B252-65D97589D0F6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DAB424E-F1DC-4954-B252-65D97589D0F6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DAB424E-F1DC-4954-B252-65D97589D0F6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DAB424E-F1DC-4954-B252-65D97589D0F6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9DE8CAB3-A532-4E14-8C3A-C85E71FEBFB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DE8CAB3-A532-4E14-8C3A-C85E71FEBFB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DE8CAB3-A532-4E14-8C3A-C85E71FEBFB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DE8CAB3-A532-4E14-8C3A-C85E71FEBFB4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D3602F8E-EABA-4C2A-A57F-CB0869DC9558}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D3602F8E-EABA-4C2A-A57F-CB0869DC9558}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D3602F8E-EABA-4C2A-A57F-CB0869DC9558}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D3602F8E-EABA-4C2A-A57F-CB0869DC9558}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {C11A1BF4-BA3D-4EC0-9A58-F7E28A8D2A01}
+	EndGlobalSection
+EndGlobal

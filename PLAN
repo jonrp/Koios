@@ -1,0 +1,36 @@
+﻿* Wave 1: Basics
+- Native types
+- Transient / Ephemeral / Persistent schemas
+- View
+- Audit
+- Storage drivers (Dapper?): SQLite / SqlCE / SqlServer
+- Distributed drivers: nats.io
+- Expression parser / code
+
+* Wave 2: UI
+- Users management
+- Schema management
+- Grid (ObjectListView)
+- Chart (ZedGraph)
+- Workspace (dockpanelsuite)
+- Plugins
+
+* Wave 3: Maturity
+- Validators
+- Schema inheritance
+- Schema FK
+- Pivot view
+- User groups
+- Schema groups
+- Access  per group / schema
+- Access per filter
+- Calculated fields
+- Proxy methods
+- Runtime-generated interface / abstract object wrapper
+
+* Wave 4: Beyond
+- Service manager
+- Python version (pythonnet?)
+- Java version
+- C++ version
+- Web UI
