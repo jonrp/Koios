@@ -1,120 +1,69 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Text;
 
 namespace Koios.Core.Misc
 {
-    /// DateTimePrecise provides a way to get a DateTime that exhibits the
-    /// relative precision of
-    /// System.Diagnostics.Stopwatch, and the absolute accuracy of DateTime.Now.
-    public class DateTimePrecise
+    public class Chronos
     {
-        /*
-         if ((s - immutable._s_observed) * _clockTickFrequency > 0)
-{
-_immutable = new DateTimePreciseSafeImmutable(
-t,
-t_base_new,
-s,
-((s - immutable._s_observed) * _clockTickFrequency * 2)
-/
-(t.Ticks - immutable._t_observed.Ticks + t.Ticks + t.Ticks - t_base_new.Ticks - immutable._t_observed.Ticks)
-} 
-         */
-
-
-        /// Creates a new instance of DateTimePrecise.
-        /// A large value of synchronizePeriodSeconds may cause arithmetic overthrow
-        /// exceptions to be thrown. A small value may cause the time to be unstable.
-        /// A good value is 10.
-        /// synchronizePeriodSeconds = The number of seconds after which the
-        /// DateTimePrecise will synchronize itself with the system clock.
-        public DateTimePrecise(long synchronizePeriodSeconds)
+        private struct Snapshot
         {
-            Stopwatch = Stopwatch.StartNew();
-            this.Stopwatch.Start();
+            public readonly DateTime dtObserved;
+            public readonly DateTime dtBase;
+            public readonly long swObserved;
+            public readonly long swFrequency;
 
-            DateTime t = DateTime.UtcNow;
-            _immutable = new DateTimePreciseSafeImmutable(t, t, Stopwatch.ElapsedTicks,
-                Stopwatch.Frequency);
+            public Snapshot(DateTime dtObserved, DateTime dtBase, long swObserved, long swFrequency)
+            {
+                this.dtObserved = dtObserved;
+                this.dtBase = dtBase;
+                this.swObserved = swObserved;
+                this.swFrequency = swFrequency;
+            }
+        }
+        
+        private readonly long synchPeriodSwTicks;
 
-            _synchronizePeriodSeconds = synchronizePeriodSeconds;
-            _synchronizePeriodStopwatchTicks = synchronizePeriodSeconds *
-                Stopwatch.Frequency;
-            _synchronizePeriodClockTicks = synchronizePeriodSeconds *
-                _clockTickFrequency;
+        public Stopwatch stopwatch;
+        private Snapshot snapshot;
+
+        public Chronos()
+        {
+            synchPeriodSwTicks = 10 * Stopwatch.Frequency;
+
+            DateTime dtObserved = DateTime.UtcNow;
+            stopwatch = Stopwatch.StartNew();
+            snapshot = new Snapshot(dtObserved, dtObserved, stopwatch.ElapsedTicks, Stopwatch.Frequency);
         }
 
-        /// Returns the current date and time, just like DateTime.UtcNow.
         public DateTime UtcNow
         {
             get
             {
-                long s = this.Stopwatch.ElapsedTicks;
-                DateTimePreciseSafeImmutable immutable = _immutable;
+                DateTime dtObserved = DateTime.UtcNow;
+                long swObserved = stopwatch.ElapsedTicks;
+                long et = swObserved - snapshot.swObserved;
 
-                if (s < immutable._s_observed + _synchronizePeriodStopwatchTicks)
+                if (et < 0 || dtObserved.Ticks - snapshot.dtObserved.Ticks > TimeSpan.TicksPerMinute)
                 {
-                    return immutable._t_base.AddTicks(((
-                        s - immutable._s_observed) * _clockTickFrequency) / (
-                        immutable._stopWatchFrequency));
+                    snapshot = new Snapshot(dtObserved, dtObserved, stopwatch.ElapsedTicks, Stopwatch.Frequency);
+                    return dtObserved;
+                }
+                else if (et < synchPeriodSwTicks)
+                {
+                    return snapshot.dtBase.AddTicks(et * TimeSpan.TicksPerSecond / snapshot.swFrequency);
                 }
                 else
                 {
-                    DateTime t = DateTime.UtcNow;
-
-                    DateTime t_base_new = immutable._t_base.AddTicks(((
-                        s - immutable._s_observed) * _clockTickFrequency) / (
-                        immutable._stopWatchFrequency));
-
-                    _immutable = new DateTimePreciseSafeImmutable(
-                        t,
-                        t_base_new,
-                        s,
-                        ((s - immutable._s_observed) * _clockTickFrequency * 2)
-                        /
-                        (t.Ticks - immutable._t_observed.Ticks + t.Ticks +
-                            t.Ticks - t_base_new.Ticks - immutable._t_observed.Ticks)
-                    );
-
-                    return t_base_new;
+                    DateTime dtBase = snapshot.dtBase.AddTicks(et * TimeSpan.TicksPerSecond / snapshot.swFrequency);
+                    snapshot = new Snapshot(dtObserved, dtBase, swObserved,
+                        et * TimeSpan.TicksPerSecond * 2 / (dtObserved.Ticks - snapshot.dtObserved.Ticks + dtObserved.Ticks + dtObserved.Ticks - dtBase.Ticks - snapshot.dtObserved.Ticks));
+                    return dtBase;
                 }
             }
         }
 
-        /// Returns the current date and time, just like DateTime.Now.
-        public DateTime Now
-        {
-            get
-            {
-                return this.UtcNow.ToLocalTime();
-            }
-        }
+        public long UtcTicks => UtcNow.Ticks;
 
-        /// The internal System.Diagnostics.Stopwatch used by this instance.
-        public Stopwatch Stopwatch;
-
-        private long _synchronizePeriodStopwatchTicks;
-        private long _synchronizePeriodSeconds;
-        private long _synchronizePeriodClockTicks;
-        private const long _clockTickFrequency = 10000000;
-        private DateTimePreciseSafeImmutable _immutable;
-    }
-
-    internal sealed class DateTimePreciseSafeImmutable
-    {
-        internal DateTimePreciseSafeImmutable(DateTime t_observed, DateTime t_base,
-             long s_observed, long stopWatchFrequency)
-        {
-            _t_observed = t_observed;
-            _t_base = t_base;
-            _s_observed = s_observed;
-            _stopWatchFrequency = stopWatchFrequency;
-        }
-        internal readonly DateTime _t_observed;
-        internal readonly DateTime _t_base;
-        internal readonly long _s_observed;
-        internal readonly long _stopWatchFrequency;
+        public DateTime Now => UtcNow.ToLocalTime();
     }
 }
