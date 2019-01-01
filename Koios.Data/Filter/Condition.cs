@@ -12,6 +12,11 @@
             Comparer = comparer;
             Item2 = item2;
         }
+
+        public void Compile(IFilterCompiler<I1, I2> compiler)
+        {
+            compiler.Compile(this);
+        }
     }
 
     public struct Condition<I1>
@@ -31,8 +36,6 @@
         public IFilterExpression<I1, I2> LessOrEquals<I2>(I2 item2) => new Condition<I1, I2>(item1, FilterConditionOperator.LE, item2);
         public IFilterExpression<I1, I2> Like<I2>(I2 item2) => new Condition<I1, I2>(item1, FilterConditionOperator.LK, item2);
         public IFilterExpression<I1, I2> NotLike<I2>(I2 item2) => new Condition<I1, I2>(item1, FilterConditionOperator.NL, item2);
-        public IFilterExpression<I1, I2> In<I2>(I2 item2) => new Condition<I1, I2>(item1, FilterConditionOperator.IN, item2);
-        public IFilterExpression<I1, I2> NotIn<I2>(I2 item2) => new Condition<I1, I2>(item1, FilterConditionOperator.NI, item2);
     }
 
     public static class Condition

@@ -42,6 +42,8 @@ namespace Koios.Data
 
         protected virtual DbCommand CreateCommand() => dbc.CreateCommand();
 
+        protected virtual string GetParameterPrefix() => "@";
+
         public virtual void Dispose() => dbc.Dispose();
 
         private bool connected;
@@ -51,7 +53,7 @@ namespace Koios.Data
 
         public IQuerySelect Select(params string[] fieldNames)
         {
-            return new KDataQuery(CreateCommand(), fieldNames);
+            return new KDataQuery(CreateCommand(), GetParameterPrefix(), fieldNames);
         }
     }
 }

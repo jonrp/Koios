@@ -9,8 +9,6 @@
         LT,
         LE,
         LK,
-        NL,
-        IN,
-        NI
+        NL
     }
 }

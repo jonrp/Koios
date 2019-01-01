@@ -12,6 +12,11 @@
             Combiner = combiner;
             Item2 = item2;
         }
+
+        public void Compile(IFilterCompiler<I1, I2> compiler)
+        {
+            compiler.Compile(this);
+        }
     }
 
     public static class Composition

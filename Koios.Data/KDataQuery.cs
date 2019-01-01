@@ -8,15 +8,19 @@ namespace Koios.Data
 {
     public class KDataQuery : IQuerySelect, IQueryFrom, IQueryWhere, IQueryOrderBy, IQueryExecute
     {
-        private DbCommand cmd;
+        private readonly DbCommand cmd;
+        private readonly string parameterPrefix;
+
         private string[] fieldNames;
         private string schemaName;
         private List<(string fieldName, bool descending)> order = new List<(string, bool)>();
         private IFilterExpression<string, object> filter;
 
-        public KDataQuery(DbCommand cmd, string[] fieldNames)
+        public KDataQuery(DbCommand cmd, string parameterPrefix, string[] fieldNames)
         {
             this.cmd = cmd;
+            this.parameterPrefix = parameterPrefix;
+
             this.fieldNames = fieldNames;
         }
 
@@ -67,7 +71,10 @@ namespace Koios.Data
                 cmd.CommandText += string.Join(",", fieldNames);
             }
             cmd.CommandText += " from " + schemaName;
-            // TODO WHERE
+            if (filter != null)
+            {
+                filter.Compile(new KDataFilterCompiler(cmd, parameterPrefix));
+            }
             if (order.Count > 0)
             {
                 cmd.CommandText += " order by " + string.Join(",", order.Select(o => o.fieldName + (o.descending ? " desc" : "")));
