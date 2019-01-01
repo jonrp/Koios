@@ -7,11 +7,11 @@ namespace Koios.Core.Model
     {
         string Name { get; }
 
-        bool IsConnected { get; }
+        bool IsStatusConnected { get; }
 
-        string Status { get; }
+        string StatusMessage { get; }
 
-        event Action<bool, string> StatusChanged;
+        event Action<bool, string> StatusChange;
 
         #region User Management
 
