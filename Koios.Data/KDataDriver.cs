@@ -1,5 +1,6 @@
 ﻿using Koios.Data.Query;
 using Koios.Data.Record;
+using Koios.Data.Table;
 using System;
 using System.Data;
 using System.Data.Common;
@@ -67,6 +68,21 @@ namespace Koios.Data
         public IRecordDeleteFrom DeleteFrom(string table)
         {
             return new KDataDelete(CreateCommand(), table);
+        }
+
+        public ITableCreate CreateTable(string table)
+        {
+            return new KDataCreateTable(CreateCommand(), table);
+        }
+
+        public ITableAlter AlterTable(string table)
+        {
+            return new KDataAlterTable(CreateCommand(), table);
+        }
+
+        public ITableDrop DropTable(string table)
+        {
+            return new KDataDropTable(CreateCommand(), table);
         }
     }
 }

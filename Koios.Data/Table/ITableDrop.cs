@@ -1,6 +1,6 @@
 ﻿namespace Koios.Data.Table
 {
-    public interface ITableDrop
+    public interface ITableDrop : ITableExecute
     {
     }
 }
