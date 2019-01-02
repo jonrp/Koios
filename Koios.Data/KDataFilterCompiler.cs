@@ -7,12 +7,10 @@ namespace Koios.Data
     public class KDataFilterCompiler : IFilterCompiler<string, object>
     {
         private readonly DbCommand cmd;
-        private readonly string parameterPrefix;
 
-        public KDataFilterCompiler(DbCommand cmd, string parameterPrefix)
+        public KDataFilterCompiler(DbCommand cmd)
         {
             this.cmd = cmd;
-            this.parameterPrefix = parameterPrefix;
         }
 
         public void Compile(Condition<string, object> condition)
@@ -65,11 +63,8 @@ namespace Koios.Data
                 default:
                     throw new NotSupportedException(condition.Comparer.ToString());
             }
-            var parameter = cmd.CreateParameter();
-            parameter.ParameterName = parameterPrefix + "f" + cmd.Parameters.Count;
-            parameter.Value = condition.Item2;
-            cmd.Parameters.Add(parameter);
-            cmd.CommandText += parameter.ParameterName;
+            cmd.CommandText += "?";
+            cmd.Parameters.Add(condition.Item2 ?? DBNull.Value);
         }
 
         public void Compile(Composition<string, object> composition)

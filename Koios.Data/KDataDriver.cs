@@ -1,4 +1,5 @@
 ﻿using Koios.Data.Query;
+using Koios.Data.Record;
 using System;
 using System.Data;
 using System.Data.Common;
@@ -17,43 +18,55 @@ namespace Koios.Data
 
         private void OnStateChanged(object sender, StateChangeEventArgs e)
         {
-            bool newConnected;
+            bool isStatusConnected;
             switch (e.CurrentState)
             {
                 case ConnectionState.Open:
                 case ConnectionState.Fetching:
                 case ConnectionState.Executing:
-                    newConnected = true;
+                    isStatusConnected = true;
                     break;
                 default:
-                    newConnected = false;
+                    isStatusConnected = false;
                     break;
             }
-            if (newConnected != connected)
+            if (isStatusConnected != IsStatusConnected)
             {
-                connected = newConnected;
-                StatusChange?.Invoke(connected);
+                IsStatusConnected = isStatusConnected;
+                StatusChange?.Invoke(IsStatusConnected);
             }
         }
 
         protected virtual void Open() => dbc.Open();
 
-        protected virtual DbTransaction BeginTransaction() => dbc.BeginTransaction();
+        protected DbTransaction BeginTransaction() => dbc.BeginTransaction();
 
-        protected virtual DbCommand CreateCommand() => dbc.CreateCommand();
-
-        protected virtual string GetParameterPrefix() => "@";
-
+        protected DbCommand CreateCommand() => dbc.CreateCommand();
+        
         public virtual void Dispose() => dbc.Dispose();
 
-        private bool connected;
-        public bool IsStatusConnected => connected;
+        public bool IsStatusConnected { get; private set; }
 
         public event Action<bool> StatusChange;
 
-        public IQuerySelect Select(params string[] fieldNames)
+        public IQuerySelect Select(params string[] columns)
         {
-            return new KDataQuery(CreateCommand(), GetParameterPrefix(), fieldNames);
+            return new KDataQuery(CreateCommand(), columns);
+        }
+
+        public IRecordInsertInto InsertInto(string table)
+        {
+            return new KDataInsert(CreateCommand(), table);
+        }
+
+        public IRecordUpdate Update(string table)
+        {
+            return new KDataUpdate(CreateCommand(), table);
+        }
+
+        public IRecordDeleteFrom DeleteFrom(string table)
+        {
+            return new KDataDelete(CreateCommand(), table);
         }
     }
 }

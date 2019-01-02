@@ -9,24 +9,20 @@ namespace Koios.Data
     public class KDataQuery : IQuerySelect, IQueryFrom, IQueryWhere, IQueryOrderBy, IQueryExecute
     {
         private readonly DbCommand cmd;
-        private readonly string parameterPrefix;
-
-        private string[] fieldNames;
-        private string schemaName;
-        private List<(string fieldName, bool descending)> order = new List<(string, bool)>();
+        private readonly string[] columns;
+        private string table;
+        private readonly List<(string column, bool descending)> order = new List<(string, bool)>();
         private IFilterExpression<string, object> filter;
 
-        public KDataQuery(DbCommand cmd, string parameterPrefix, string[] fieldNames)
+        public KDataQuery(DbCommand cmd, string[] columns)
         {
             this.cmd = cmd;
-            this.parameterPrefix = parameterPrefix;
-
-            this.fieldNames = fieldNames;
+            this.columns = columns;
         }
 
-        public IQueryFrom From(string schemaName)
+        public IQueryFrom From(string table)
         {
-            this.schemaName = schemaName;
+            this.table = table;
             return this;
         }
 
@@ -48,36 +44,37 @@ namespace Koios.Data
             return this;
         }
 
-        public IQueryOrderBy OrderBy(string fieldName, bool descending = false)
+        public IQueryOrderBy OrderBy(string column, bool descending = false)
         {
-            order.Add((fieldName, descending));
+            order.Add((column, descending));
             return this;
         }
 
-        public IQueryOrderBy ThenBy(string fieldName, bool descending = false)
+        public IQueryOrderBy ThenBy(string column, bool descending = false)
         {
-            return OrderBy(fieldName, descending);
+            return OrderBy(column, descending);
         }
 
         public DbDataReader Execute()
         {
             cmd.CommandText = "select ";
-            if (fieldNames == null || fieldNames.Length == 0)
+            if (columns == null || columns.Length == 0)
             {
                 cmd.CommandText += "*";
             }
             else
             {
-                cmd.CommandText += string.Join(",", fieldNames);
+                cmd.CommandText += string.Join(",", columns);
             }
-            cmd.CommandText += " from " + schemaName;
+            cmd.CommandText += " from " + table;
             if (filter != null)
             {
-                filter.Compile(new KDataFilterCompiler(cmd, parameterPrefix));
+                cmd.CommandText += " where ";
+                filter.Compile(new KDataFilterCompiler(cmd));
             }
             if (order.Count > 0)
             {
-                cmd.CommandText += " order by " + string.Join(",", order.Select(o => o.fieldName + (o.descending ? " desc" : "")));
+                cmd.CommandText += " order by " + string.Join(",", order.Select(o => o.column + (o.descending ? " desc" : "")));
             }
             return cmd.ExecuteReader();
         }
